@@ -34,6 +34,8 @@ export class Bangumi {
     // @Optional
     favorite_status: number;
     // @Optional
+    has_favorited_version: boolean;
+    // @Optional
     unwatched_count: number;
     // @Optional
     delete_mark: number;

@@ -34,15 +34,18 @@ export class Synchronize {
         return this._bangumiApiProxy.favoriteStatus(bangumi.bgm_id)
             .then(data => {
                 // faved in bangumi.tv
-                if (!bangumi.favorite_status) {
-                    return this.favoriteBangumiInAlbireo(bangumi.id, data.status.id)
-                        .then(() => {
-                            return {status: 0, data: data};
-                        })
-                } else if (bangumi.favorite_status !== data.status.id) {
-                    return {status: 1, data: data, diff: {albireo: bangumi.favorite_status, bgm: data.status.id}};
+                if (!bangumi.has_favorited_version) {
+                    if (!bangumi.favorite_status) {
+                        return this.favoriteBangumiInAlbireo(bangumi.id, data.status.id)
+                            .then(() => {
+                                return {status: 0, data: data};
+                            })
+                    } else if (bangumi.favorite_status !== data.status.id) {
+                        return {status: 1, data: data, diff: {albireo: bangumi.favorite_status, bgm: data.status.id}};
+                    }
+                    return {status: 2, data: data, message: 'nothing to do'};
                 }
-                return {status: 2, data: data, message: 'nothing to do'};
+                return {status: 2, data: data, message: 'has favorited version'};
             }, (error) => {
                 // not fav in bangumi.tv but has favorite status in albireo bangumi.
                 // write status to bangumi.tv
