@@ -23,11 +23,17 @@ import Tab = chrome.tabs.Tab;
 @Remote()
 @injectable()
 export class BackgroundCore {
+    private _extensionId = EXTENSION_ID;
+
     @Export()
     verify():Promise<any> {
-        console.log('verified');
+        console.log(
+            '%c Deneb %c Received verify request from Vega. ',
+            'color: #fff; margin: 1em 0; padding: 5px 0; background: #3498db;',
+            'margin: 1em 0; padding: 5px 0; background: #efefef;'
+        );
         return new Promise<any>(resolve => {
-            resolve('OK');
+            resolve('token:' + this._extensionId);
         });
     }
 
