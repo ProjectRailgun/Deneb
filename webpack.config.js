@@ -7,7 +7,8 @@ const CopyWebpckPlugin = require('copy-webpack-plugin');
 const env = require('./env');
 
 let isProd = process.env.NODE_ENV === 'production';
-let albireo_host = isProd ? env.prod.albireo_host : env.dev.albireo_host;
+let vega_host = isProd ? env.prod.vega_host : env.dev.vega_host;
+let extension_id = isProd ? env.prod.extension_id : env.dev.extension_id;
 let watch = !isProd;
 
 module.exports = {
@@ -41,7 +42,8 @@ module.exports = {
             }
         ]),
         new DefinePlugin({
-            ALBIREO_HOST: JSON.stringify(albireo_host)
+            VEGA_HOST: JSON.stringify(vega_host),
+            EXTENSION_ID: JSON.stringify(extension_id)
         })
     ]
 };

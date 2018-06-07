@@ -10,7 +10,7 @@ import { Episode } from '../entity/episode';
 @Remote()
 @injectable()
 export class Synchronize {
-    private _ablireoHost = ALBIREO_HOST;
+    private _ablireoHost = VEGA_HOST;
 
     constructor(private _bangumiApiProxy: BangumiAPIProxy,
                 private _bangumiWebProxy: BangumiWebProxy) {

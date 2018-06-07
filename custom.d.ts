@@ -1,1 +1,2 @@
-declare var ALBIREO_HOST: any;
+declare var VEGA_HOST: any;
+declare var EXTENSION_ID: any;

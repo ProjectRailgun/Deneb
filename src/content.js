@@ -1,5 +1,5 @@
 let avatar = document.querySelector('#headerNeue2 .headerNeueInner .idBadgerNeue .avatar');
-let randomIdentifier = 'sadr' + Math.floor(Math.random() * 100);
+let randomIdentifier = 'deneb-' + Math.floor(Math.random() * 100);
 let result = !!avatar;
 if (result) {
     const embeddedElement = document.createElement('div');
