@@ -26,7 +26,7 @@ export class Synchronize {
                     return this._bangumiApiProxy.favoriteStatus(bangumi.bgm_id);
                 });
         }
-        return this.favoriteBangumiInAlbireo(bangumi.id, bgmFavStatus);
+        return this.updateFavoriteLocal(bangumi.id, bgmFavStatus);
     }
 
     @Export()
@@ -36,7 +36,7 @@ export class Synchronize {
                 // faved in bangumi.tv
                 if (!bangumi.has_favorited_version) {
                     if (!bangumi.favorite_status) {
-                        return this.favoriteBangumiInAlbireo(bangumi.id, data.status.id)
+                        return this.updateFavoriteLocal(bangumi.id, data.status.id)
                             .then(() => {
                                 return {status: 0, data: data};
                             })
@@ -70,7 +70,7 @@ export class Synchronize {
     @Export()
     updateFavorite(bangumi: Bangumi, favoriteStatus: FavoriteStatus): Promise<any> {
         return Promise.all([
-            this.favoriteBangumiInAlbireo(bangumi.id, favoriteStatus.interest),
+            this.updateFavoriteLocal(bangumi.id, favoriteStatus.interest),
             this._bangumiWebProxy.updateFavoriteStatus(bangumi.bgm_id, favoriteStatus)
         ]);
     }
@@ -78,7 +78,7 @@ export class Synchronize {
     @Export()
     deleteFavorite(bangumi: Bangumi): Promise<any> {
         return Promise.all([
-            this.deleteFavoriteInAlbireo(bangumi.id),
+            this.deleteFavoriteLocal(bangumi.id),
             this._bangumiWebProxy.removeFavoriteStatus(bangumi.bgm_id)
         ]);
     }
@@ -93,7 +93,7 @@ export class Synchronize {
     // }
 
     /**
-     * Synchronize between albireo servern and bangumi of current bangumi progress.
+     * Synchronize between Vega server and bgm.tv of current bangumi progress.
      * @param {Bangumi} bangumi must contain episodes watch_progress info.
      * @returns {Promise<any>}
      */
@@ -104,7 +104,6 @@ export class Synchronize {
         }
         return this._bangumiApiProxy.getProgress(bangumi.bgm_id)
             .then((episodeList) => {
-                console.log(episodeList);
                 if (Array.isArray(bangumi.episodes)) {
                     let watchedEpisodes = this.filterWatchedEpisode(bangumi.episodes);
                     if (watchedEpisodes.length > 0) {
@@ -120,22 +119,22 @@ export class Synchronize {
                                 return true;
                             });
                             if (episodesNeedSync.length > 0) {
-                                // albireo => bgm.tv
+                                // local => bgm.tv
                                 return this._bangumiApiProxy.updateEpisodeStatus(
                                     episodesNeedSync[episodesNeedSync.length - 1].bgm_eps_id,
                                     'watched', episodesNeedSync.map(eps => eps.bgm_eps_id))
                                     .then(() => {
                                         if (episodeList.length > 0) {
-                                            return this.bgmToAlbireo(bangumi, episodeList);
+                                            return this.syncToLocal(bangumi, episodeList);
                                         }
-                                        return {status: 1, message: 'albireo => bgm.tv synchronized'};
+                                        return {status: 1, message: 'local => bgm.tv synchronized'};
                                     });
                             }
                         }
                     }
                     if (Array.isArray(episodeList) && episodeList.length > 0) {
-                        // bgm.tv => albireo
-                        return this.bgmToAlbireo(bangumi, episodeList);
+                        // bgm.tv => local
+                        return this.syncToLocal(bangumi, episodeList);
                     }
                 }
                 return Promise.resolve({status: 2, data: null, message: 'nothing to do'});
@@ -144,14 +143,13 @@ export class Synchronize {
                     let watchedEpisodes = this.filterWatchedEpisode(bangumi.episodes);
                     if (watchedEpisodes.length > 0) {
                         let maxEpisodeIndex = this.findMaxEpisodeIndex(watchedEpisodes);
-                        console.log(maxEpisodeIndex);
                         if (maxEpisodeIndex !== -1) {
                             return this._bangumiApiProxy.updateEpisodeStatus(
                                 watchedEpisodes[maxEpisodeIndex].bgm_eps_id,
                                 'watched',
                                 watchedEpisodes.slice(0, maxEpisodeIndex + 1).map(eps => eps.bgm_eps_id))
                                 .then(() => {
-                                    return {status: 1, message: 'albireo => bgm.tv synchronized'};
+                                    return {status: 1, message: 'local => bgm.tv synchronized'};
                                 });
                         }
                     }
@@ -170,7 +168,7 @@ export class Synchronize {
     //         });
     // }
 
-    private favoriteBangumiInAlbireo(bangumi_uuid: string, favorite_status: number): Promise<any> {
+    private updateFavoriteLocal(bangumi_uuid: string, favorite_status: number): Promise<any> {
         return fetch(`${this._ablireoHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
             method: 'POST',
             body: JSON.stringify({status: favorite_status}),
@@ -179,7 +177,7 @@ export class Synchronize {
             .then(res => res.json());
     }
 
-    private deleteFavoriteInAlbireo(bangumi_uuid: string): Promise<any> {
+    private deleteFavoriteLocal(bangumi_uuid: string): Promise<any> {
         return fetch(`${this._ablireoHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
             method: 'DELETE',
             credentials: 'include'
@@ -204,7 +202,7 @@ export class Synchronize {
         return -1;
     }
 
-    private batchUpdateWatchProgressToAlbireo(watchProgressList: WatchHistoryRecord[]) {
+    private batchUpdateWatchProgress(watchProgressList: WatchHistoryRecord[]) {
         return fetch(`${this._ablireoHost}/api/watch/history/synchronize`, {
             method: 'POST',
             headers: {
@@ -216,7 +214,7 @@ export class Synchronize {
             .then(res => res.json());
     }
 
-    private bgmToAlbireo(bangumi: Bangumi, episodeProgressList: any): Promise<any> {
+    private syncToLocal(bangumi: Bangumi, episodeProgressList: any): Promise<any> {
         let watchProgressList = episodeProgressList.map((eps: any) => {
             let episode = bangumi.episodes.find(episode => episode.bgm_eps_id === eps.id);
             if (!episode) {
@@ -247,9 +245,9 @@ export class Synchronize {
             return watchHistoryRecord;
         }).filter((watchProgress: WatchHistoryRecord) => !!watchProgress);
         if (watchProgressList && watchProgressList.length > 0) {
-            return this.batchUpdateWatchProgressToAlbireo(watchProgressList as WatchHistoryRecord[])
+            return this.batchUpdateWatchProgress(watchProgressList as WatchHistoryRecord[])
                 .then(() => {
-                    return {status: 0, message: 'bgm.tv => albireo synchronized'};
+                    return {status: 0, message: 'bgm.tv => local synchronized'};
                 });
         }
         return Promise.resolve({status: 2, data: null, message: 'nothing to do'});
