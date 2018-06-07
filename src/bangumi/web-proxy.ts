@@ -44,7 +44,6 @@ export class BangumiWebProxy {
             })
             .then(doc => {
                 let avatar = doc.querySelector('#headerNeue2 .headerNeueInner .idBadgerNeue .avatar');
-                console.log(avatar);
                 if (avatar) {
                     return {isLogin: true};
                 }
@@ -151,7 +150,6 @@ export class BangumiWebProxy {
                     }
                     post.author = this.getPostUser(commentBlock);
                     post.id = postId;
-                    // console.log(postDate);
                     post.date = postDate.valueOf();
                     let content = (commentBlock.querySelector('.inner > .reply_content > .message.clearit') as HTMLElement).innerHTML;
                     // TODO: sanitize content html;

@@ -42,7 +42,6 @@ export class BangumiAPIProxy {
     constructor(@inject(TYPES.BrowserStorage) private _storage: BrowserStorage) {
         this._storage.get('authInfo')
             .then((authInfo) => {
-                console.log(authInfo);
                 if (authInfo) {
                     this._authInfo.next(authInfo);
                 } else {
@@ -53,7 +52,6 @@ export class BangumiAPIProxy {
 
     @Export()
     auth(username: string, password: string): Promise<any> {
-        console.log(username, password);
         const params = new URLSearchParams();
         params.set('username', username);
         params.set('password', password);
@@ -131,7 +129,6 @@ export class BangumiAPIProxy {
                 })
                     .then(resp => resp.json())
                     .then(data => {
-                        console.log(data);
                         if (!data.code) {
                             return data;
                         }
@@ -246,7 +243,6 @@ export class BangumiAPIProxy {
         return this.authInfo
             .filter(authInfo => authInfo !== INITIAL_STATE)
             .first()
-            .do(authInfo => console.log(authInfo))
             .toPromise();
     }
 

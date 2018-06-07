@@ -36,21 +36,23 @@ export class BackgroundCore {
         return new Promise<any>((resolve, reject) => {
             chrome.tabs.query({active: true}, (queryResult) => {
                 let previousTab = queryResult[0];
-                console.log(previousTab);
                 if (!previousTab) {
                     reject('Don\'t close current page.');
                     return;
                 }
+                console.log(
+                    '%c Deneb %c Logging into bgm.tv. ',
+                    'color: #fff; margin: 1em 0; padding: 5px 0; background: #3498db;',
+                    'margin: 1em 0; padding: 5px 0; background: #efefef;'
+                );
                 chrome.tabs.create({url: 'https://bgm.tv/login'}, (openedTab) => {
                     let urlChanged = false;
                     let tabUpdateListener = function (tabId: number, changeInfo: TabChangeInfo, tab: Tab) {
-                        console.log(tabId, changeInfo);
                         if (tabId === openedTab.id && !urlChanged && changeInfo.url && /^https:\/\/bgm\.tv\/?$/.test(changeInfo.url)) {
                             urlChanged = true;
                         }
                         if (tabId === openedTab.id && urlChanged && changeInfo.status === 'complete') {
                             chrome.tabs.executeScript(tabId, {file: 'content.js'}, (results) => {
-                                console.log(results);
                                 if (results && results.length > 0 && results[0] === true) {
                                     setTimeout(() => {
                                         chrome.tabs.onUpdated.removeListener(tabUpdateListener);
