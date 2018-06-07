@@ -82,8 +82,21 @@ chrome.runtime.onMessageExternal.addListener(function (message: RPCMessage, send
         .then((result: any) => {
             sendResponse({error: null, result: result});
         }, (error: any) => {
-            console.log(error);
             sendResponse({error: error, result: null});
         });
     return true;
 });
+
+function openSite(){
+    chrome.tabs.query({}, function(tabs) {
+        for (var i = 0, tab; tab = tabs[i]; i++) {
+            if (tab.url && tab.url.startsWith(VEGA_HOST)) {
+                chrome.tabs.update(tab.id ? tab.id : 0, {active: true});
+                return;
+            }
+        }
+        chrome.tabs.create({url: VEGA_HOST});
+    });
+}
+
+chrome.browserAction.onClicked.addListener(openSite);
