@@ -239,7 +239,6 @@ export class BangumiAPIProxy {
 
     @Export()
     getAuthInfo(): Promise<AuthInfo> {
-        console.log('getAuthInfo');
         return this.authInfo
             .filter(authInfo => authInfo !== INITIAL_STATE)
             .first()

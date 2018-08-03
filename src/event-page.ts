@@ -28,7 +28,7 @@ export class BackgroundCore {
     @Export()
     verify():Promise<any> {
         console.log(
-            '%c Deneb %c Received verify request from Vega. ',
+            '%c Deneb %c Received verify request from Altair. ',
             'color: #fff; margin: 1em 0; padding: 5px 0; background: #3498db;',
             'margin: 1em 0; padding: 5px 0; background: #efefef;'
         );
