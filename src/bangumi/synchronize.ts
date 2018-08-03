@@ -42,10 +42,20 @@ export class Synchronize {
                             })
                     } else if (bangumi.favorite_status !== data.status.id) {
                         return {status: 1, data: data, diff: {albireo: bangumi.favorite_status, bgm: data.status.id}};
+                    } else {
+                        return {status: 2, data: data, message: 'nothing to do'};
                     }
-                    return {status: 2, data: data, message: 'nothing to do'};
+                } else {
+                    if (bangumi.favorite_status) {
+                        if (bangumi.favorite_status !== data.status.id) {
+                            return {status: 1, data: data, diff: {albireo: bangumi.favorite_status, bgm: data.status.id}};
+                        } else {
+                            return {status: 2, data: data, message: 'nothing to do'};
+                        }
+                    } else {
+                        return {status: 2, data: data, message: 'has another version favorited'};
+                    }
                 }
-                return {status: 2, data: data, message: 'has favorited version'};
             }, (error) => {
                 // not fav in bangumi.tv but has favorite status in albireo bangumi.
                 // write status to bangumi.tv
