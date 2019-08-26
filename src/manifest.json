@@ -2,15 +2,27 @@
   "manifest_version": 2,
   "name": "番組Collection Plus",
   "description": "Watch bangumi, in the way it should be.",
-  "version": "0.2.1",
+  "version": "0.3.1",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "deneb@bangumi.co"
+    }
+  },
   "background": {
     "scripts": ["backend.js"],
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*"],
+      "run_at": "document_start",
+      "js": ["bridge.js"]
+    }
+  ],
   "externally_connectable": {
     "matches": [
       "https://bangumi.co/*",
-      "https://*.internal.railgun.co/*"
+      "https://beta.bangumi.co/*"
     ]
   },
   "permissions": [
@@ -18,7 +30,7 @@
     "https://bgm.tv/*",
     "https://api.bgm.tv/*",
     "https://bangumi.co/*",
-    "https://*.internal.railgun.co/*",
+    "https://beta.bangumi.co/*",
     "storage",
     "tabs"
   ],

@@ -11,7 +11,7 @@ import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/observable/throw';
 import { injectable } from 'inversify';
 import { container, Export, invokeRPC, Remote, resolveAllRemote } from './utils/rpc';
-import { RPCMessage } from './utils/message';
+import { RPCMessage, RPCResult } from './utils/message';
 import './bangumi/api-proxy';
 import './bangumi/web-proxy';
 import './bangumi/synchronize';
@@ -23,8 +23,6 @@ import Tab = chrome.tabs.Tab;
 @Remote()
 @injectable()
 export class BackgroundCore {
-    private _extensionId = EXTENSION_ID;
-
     @Export()
     verify():Promise<any> {
         console.log(
@@ -46,11 +44,6 @@ export class BackgroundCore {
                     reject('Don\'t close current page.');
                     return;
                 }
-                console.log(
-                    '%c Deneb %c Logging into bgm.tv. ',
-                    'color: #fff; margin: 1em 0; padding: 5px 0; background: #3498db;',
-                    'margin: 1em 0; padding: 5px 0; background: #efefef;'
-                );
                 chrome.tabs.create({url: 'https://bgm.tv/login'}, (openedTab) => {
                     let urlChanged = false;
                     let tabUpdateListener = function (tabId: number, changeInfo: TabChangeInfo, tab: Tab) {
@@ -58,7 +51,7 @@ export class BackgroundCore {
                             urlChanged = true;
                         }
                         if (tabId === openedTab.id && urlChanged && changeInfo.status === 'complete') {
-                            chrome.tabs.executeScript(tabId, {file: 'content.js'}, (results) => {
+                            chrome.tabs.executeScript(tabId, {file: '/content.js'}, (results) => {
                                 if (results && results.length > 0 && results[0] === true) {
                                     setTimeout(() => {
                                         chrome.tabs.onUpdated.removeListener(tabUpdateListener);
@@ -83,12 +76,36 @@ container.bind<BrowserStorage>(TYPES.BrowserStorage).to(ChromeStore);
 
 resolveAllRemote();
 
+/**
+ * @Deprecated this is the old method only supported by Chrome. will be removed at the next version.
+ */
 chrome.runtime.onMessageExternal.addListener(function (message: RPCMessage, sender, sendResponse) {
     invokeRPC(message)
         .then((result: any) => {
             sendResponse({error: null, result: result});
         }, (error: any) => {
+            console.log(error);
             sendResponse({error: error, result: null});
+        });
+    return true;
+});
+
+chrome.runtime.onMessage.addListener(function (message: RPCMessage, sender, sendResponse) {
+    let resultMessage = {
+        messageId: message.id,
+        extensionId: message.extensionId,
+        type: 'SADR_FROM_EXT',
+        error: null,
+        result: null
+    } as RPCResult;
+    invokeRPC(message)
+        .then((result: any) => {
+            resultMessage.result = result;
+            sendResponse(resultMessage);
+        }, (error: any) => {
+            resultMessage.error = error;
+            console.log(error);
+            sendResponse(resultMessage);
         });
     return true;
 });
