@@ -1,12 +1,12 @@
 #/bin/sh
 
 # chrome
-npm run build:prod
+yarn run build:prod
 
 zip -r chrome ./dist
 
 # firefox
-npm run build:prod:firefox
+yarn run build:prod:firefox
 npx web-ext build
 source ./sign-env.sh
 echo $WEB_EXT_API_KEY

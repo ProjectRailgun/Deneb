@@ -23,6 +23,9 @@ import Tab = chrome.tabs.Tab;
 @Remote()
 @injectable()
 export class BackgroundCore {
+
+    private _extensionId = EXTENSION_ID;
+
     @Export()
     verify():Promise<any> {
         console.log(

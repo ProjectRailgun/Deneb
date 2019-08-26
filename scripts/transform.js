@@ -18,14 +18,14 @@ module.exports = function (manifest, browserType, isProd) {
             return entry === 'http://localhost/*';
         });
 
-        manifestObj.permissions[localHostUrlIndex] = `${env.prod.albireo_host}/*`;
+        manifestObj.permissions[localHostUrlIndex] = `${env.prod.vega_host}/*`;
 
         manifestObj.name = env.prod.extension_name;
         manifestObj.description = env.prod.extension_description;
-        manifestObj.content_scripts[0].matches = [`${env.prod.albireo_host}/*`];
+        manifestObj.content_scripts[0].matches = [`${env.prod.vega_host}/*`];
 
         if (browserType === CHROME) {
-            manifestObj.externally_connectable.matches = [`${env.prod.albireo_host}/*`];
+            manifestObj.externally_connectable.matches = [`${env.prod.vega_host}/*`];
         } else {
             manifestObj.browser_specific_settings.gecko.id = `${env.prod.extension_id}`;
             manifestObj.browser_specific_settings.gecko.update_url = `${env.prod.firefox_update_link}`;
