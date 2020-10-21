@@ -1,11 +1,14 @@
-This is a browser extension project for [Deneb](https://github.com/lordfriend/Deneb). It must work with Deneb 3.0.0 and above together to get work.
+# Deneb
 
-Currently support Chrome, Firefox and Edge.
+Deneb is a browser extension for [Altair](https://github.com/ProjectSummerTriangle/Altair).
+
+Only Altair ^3.0.0 supports integration with Deneb.
+
+Deneb support Chrome, Firefox and Edge.
 
 ## Overview
 
-This project add some magic bridge between Deneb and bgm.tv, which allow Deneb project add a lot of social features by
-using a bgm.tv account.
+Deneb provides an API bridge between Altair and bgm.tv, which allows Altair to provide social features from bgm.tv.
 
 ## Requirement
 
@@ -17,7 +20,7 @@ Nodejs 8.5 and above.
 
 2. `yarn install`
 
-3. rename `env.example.js` to `env.js`, edit values to match your production environment.
+3. rename `env.example.js` to `env.js`, edit values to match your development environment.
 
 4. development
 
@@ -25,16 +28,16 @@ Nodejs 8.5 and above.
 
 - Firefox: `npm run start:firefox`
 
-5. publish
+## Publish
 
-run `build.sh` will build all extensions to zip files. upload your extension to each browser's distribution platform.
+Running `build.sh` will build extensions for each browser to zip files. Upload your extension zip to each browser's plugin publishing platform.
 
-Note for Firefox extension: Due to Albireo service is private and AMO policy, you need self-distribute your extension. the building script
-will help you generate an proper update manifest. you need create the following files in order to work with `build.sh` script.
+Note for Firefox extension: Due to Mozilla AMO's policy, you need self-distribute your extension. The building script will
+help you to generate a proper update manifest. You need to create the following files in order to work with `build.sh` script.
 
-a. copy and modify `sign-env.example.sh`, rename it to sign-env.sh. the environment variable will be used by `web-ext` to sign the extension
-you need visit your [Developer Hub at AMO](https://addons.mozilla.org/en-US/developers/addon/api/key/) to acquire `api key` and `api secret`
+a. Create a copy of `sign-env.example.sh`, rename it to `sign-env.sh`. These environment variables will be used by `web-ext` to sign the extension.
+You need to obtain your visit your `api key` and `api secret` at [AMO Developer Hub](https://addons.mozilla.org/en-US/developers/addon/api/key/).
 
-b. setup your static file server, and make sure your can access static file via the `firefox_update_link` in the env.js prod section.
+b. Setup your file server, and make sure your can access the static files via the `firefox_update_link` in the `env.js` prod section.
 
-c. After run build.sh, upload your update.json and newest built firefox extension zip file resided in the web-ext-artifacts directory.
+c. After running `build.sh`, upload your `update.json` and generated Firefox extension zip in the web-ext-artifacts directory.
