@@ -1,6 +1,6 @@
 {
   "name": "Deneb",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Watch bangumi, in the way it should be.",
   "main": "event-page.js",
   "scripts": {

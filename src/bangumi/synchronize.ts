@@ -10,7 +10,7 @@ import { Episode } from '../entity/episode';
 @Remote()
 @injectable()
 export class Synchronize {
-    private _ablireoHost = VEGA_HOST;
+    private _vegaHost = VEGA_HOST;
 
     constructor(private _bangumiApiProxy: BangumiAPIProxy,
                 private _bangumiWebProxy: BangumiWebProxy) {
@@ -169,7 +169,7 @@ export class Synchronize {
     }
 
     // private getFavoritesFromAlbireo(): Promise<Bangumi[]> {
-    //     return fetch(`${this._ablireoHost}/api/home/my_bangumi?status=0`, {
+    //     return fetch(`${this._vegaHost}/api/home/my_bangumi?status=0`, {
     //         credentials: 'include'
     //     })
     //         .then(res => res.json())
@@ -179,7 +179,7 @@ export class Synchronize {
     // }
 
     private updateFavoriteLocal(bangumi_uuid: string, favorite_status: number): Promise<any> {
-        return fetch(`${this._ablireoHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
+        return fetch(`${this._vegaHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
             method: 'POST',
             body: JSON.stringify({status: favorite_status}),
             credentials: 'include'
@@ -188,7 +188,7 @@ export class Synchronize {
     }
 
     private deleteFavoriteLocal(bangumi_uuid: string): Promise<any> {
-        return fetch(`${this._ablireoHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
+        return fetch(`${this._vegaHost}/api/watch/favorite/bangumi/${bangumi_uuid}`, {
             method: 'DELETE',
             credentials: 'include'
         })
@@ -213,7 +213,7 @@ export class Synchronize {
     }
 
     private batchUpdateWatchProgress(watchProgressList: WatchHistoryRecord[]) {
-        return fetch(`${this._ablireoHost}/api/watch/history/synchronize`, {
+        return fetch(`${this._vegaHost}/api/watch/history/synchronize`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
