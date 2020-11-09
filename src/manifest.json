@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "番組Collection Plus",
   "description": "Watch bangumi, in the way it should be.",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "deneb@bangumi.co"
@@ -25,7 +25,6 @@
     ]
   },
   "permissions": [
-    "cookies",
     "https://bgm.tv/*",
     "https://api.bgm.tv/*",
     "https://bangumi.co/*",
